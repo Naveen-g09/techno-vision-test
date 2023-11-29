@@ -1,0 +1,5 @@
+Creating a web app where user can get quotation using nextjs and chadcn, and launching through vercel
+Succesfully created next js project and created a tab for both bunglow and apartment
+adding features on the go for the project, UI will be designed by tommorrow so later tommroow i can start on working with functioning 
+learnt chad cn, next js today
+so tommorrow workflow will be fast
