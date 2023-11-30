@@ -2,4 +2,133 @@ Creating a web app where user can get quotation using nextjs and chadcn, and lau
 Succesfully created next js project and created a tab for both bunglow and apartment
 adding features on the go for the project, UI will be designed by tommorrow so later tommroow i can start on working with functioning 
 learnt chad cn, next js today
-so tommorrow workflow will be fast
+so tommorrow workflow will be features
+
+
+
+
+// Import React and useState
+"use client"
+import React, { useState } from "react";
+import BungalowConfig from "./BungalowConfig";
+
+// Define the Home component
+const Home: React.FC = () => {
+  // State to manage selected values
+  const [selectedValues, setSelectedValues] = useState({
+    bungalowType: undefined,
+    cornerPlot: undefined,
+    facingType: undefined,
+    fillingDepth: undefined,
+    builtUpArea: undefined,
+    landArea: undefined,
+    totalLandArea: undefined,
+    totalBuiltUpArea: undefined,
+    numberOfFloors: undefined,
+    baseBuiltupRate: undefined,
+    landRateAtPurchase: undefined,
+  });
+
+  // Function to handle the selection of values
+  const handleSelectValues = (values: {
+    bungalowType: string | undefined;
+    cornerPlot: string | undefined;
+    facingType: string | undefined;
+    fillingDepth: number | undefined;
+    builtUpArea: number | undefined;
+    landArea: number | undefined;
+    totalLandArea: number | undefined;
+    totalBuiltUpArea: number | undefined;
+    numberOfFloors: number | undefined;
+    baseBuiltupRate: number | undefined;
+    landRateAtPurchase: number | undefined;
+  }) => {
+    setSelectedValues(values);
+  };
+
+  // Constants for charges
+  let sellFactor = 0.2;
+  let developmentCharge = 200;
+  let legalCharge = 200;
+  let AdditionalLandArea = 1700;
+  let AdditionalBuiltUpArea = 1000;
+
+  // Calculations
+  let currentLandRate = selectedValues.landRateAtPurchase
+    ? selectedValues.landRateAtPurchase * (1 + sellFactor)
+    : 0;
+
+  let NetSellingLandPrice =
+    currentLandRate + developmentCharge + legalCharge;
+
+  let landPrice =
+    NetSellingLandPrice *
+    (AdditionalLandArea + selectedValues.totalLandArea + legalCharge);
+
+  let baserateWithFlooraAddition =
+    selectedValues.baseBuiltupRate *
+    (1 + 0.05 * Math.max(selectedValues.numberOfFloors! - 3, 0));
+
+  let buildingPrice =
+    selectedValues.baseBuiltupRate *
+    (AdditionalBuiltUpArea + selectedValues.builtUpArea!);
+
+  let cornerFactor = 0.01;
+  let facing = 0.05;
+
+  let subTotal = landPrice + buildingPrice;
+
+  let fillingRate = 100;
+  let fillingCharge = selectedValues.fillingDepth
+    ? selectedValues.fillingDepth * fillingRate
+    : 0;
+
+  let facingCharge = subTotal * facing;
+  let cornerCharge = subTotal * cornerFactor;
+  let remotenessCharge = 100;
+
+  // JSX to render UI
+  return (
+    <div className="px-10 py-20 border border-red-700">
+      <h1 className="font-semibold text-4xl pb-10">
+        Bungalow Pricing Calculator
+      </h1>
+      <div className=" border border-blue-900 py-10 justify-center">
+        <BungalowConfig onSelectValues={handleSelectValues} />
+      </div>
+      <div>
+        {/* Render selected values */}
+        <p>Selected Bungalow Type: {selectedValues.bungalowType}</p>
+        <p>Selected Corner Plot: {selectedValues.cornerPlot}</p>
+        <p>Selected Facing Type: {selectedValues.facingType}</p>
+        <p>Selected Facing Type: {selectedValues.fillingDepth}</p>
+        <p>Selected Facing Type: {selectedValues.builtUpArea}</p>
+        <p>Selected Facing Type: {selectedValues.landArea}</p>
+        <p>Selected Facing Type: {selectedValues.totalLandArea}</p>
+        <p>Selected Facing Type: {selectedValues.totalBuiltUpArea}</p>
+        <p>Selected Facing Type: {selectedValues.numberOfFloors}</p>
+        <p>Selected Facing Type: {selectedValues.baseBuiltupRate}</p>
+        <p>Selected Facing Type: {selectedValues.landRateAtPurchase}</p>
+        {/* ... (other selected values) */}
+      </div>
+      <div>
+        {/* Render calculated prices and charges */}
+        <h3>Current Land Price: {currentLandRate}</h3>
+        <h3>Net Selling Land Price: {NetSellingLandPrice}</h3>
+        <h3>Land Price: {landPrice}</h3>
+        <div>
+          <h3>Base rate with floor addition: {baserateWithFlooraAddition}</h3>
+          <h3>Base price: {buildingPrice}</h3>
+        </div>
+        <h3>Sub Total: {subTotal}</h3>
+        <h3>Corner Charge: {cornerCharge}</h3>
+        <h3>Facing Charge: {facingCharge}</h3>
+        <h3>Filling Charge: {fillingCharge}</h3>
+        <h3>Grand Total: {subTotal + cornerCharge + facingCharge + fillingCharge + remotenessCharge}</h3>
+      </div>
+    </div>
+  );
+};
+
+// Export the Home component
+export default Home;
