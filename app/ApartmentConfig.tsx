@@ -19,7 +19,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-
+import 'tailwindcss/tailwind.css';
 import { DropdownMenu,DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuSeparator, DropdownMenuTrigger,   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem, } from "@/components/ui/dropdown-menu";
@@ -44,6 +44,11 @@ const handleAdditionalBuiltUpAreaChange = (value: string) => {
   setAdditionalBuiltUpArea(value);
 };
 
+const [projectManagementPercentage, setProjectManagementPercentage] = useState<number | null>(null);
+const handleProjectManagementPercentageChange = (value: string) => {
+  setProjectManagementPercentage(parseFloat(value) || 0);
+};
+
 const [landSharePerUnit, setLandSharePerUnit] = useState<number | null>(null);
 const [landPrice, setLandPrice] = useState<number | null>(null);
 const [buildingPrice, setBuildingPrice] = useState<number | null>(null);
@@ -58,7 +63,8 @@ const [floorLevelCharges, setFloorLevelCharges] = useState<number | null>(null);
 const [unitAdjustmentCharges, setUnitAdjustmentCharges] = useState<number | null>(null);
 const [grandTotal, setGrandTotal] = useState<number | null>(null);
 const [cornerFactor, setCornerFactor] = useState<number | null>(null);
-    const [remotenessFactor, setRemotenessFactor] = useState('');
+const [remotenessFactor, setRemotenessFactor] = useState<number | null>(null);
+
     const [baseBuiltupRate, setBaseBuiltupRate] = useState('');
     const [builtupRateWithFloor, setBuiltupRateWithFloor] = useState('');
 
@@ -338,17 +344,44 @@ const handleGetQuotation = () => {
     calculateFacingFactor(selectedFacing);
   }
 
-};
+  const projectManagementPercentage = parseFloat(projectManagement);
+
+  if (isNaN(projectManagementPercentage)) {
+    // Handle the case where projectManagement is not a valid number
+    console.error('Invalid project management percentage');
+    return;
+  }
+// Calculate Project Management Charge based on entered percentage
+const projectManagementChargeValue = (subtotalValue * (projectManagementPercentage / 100)).toFixed(2);
+const parsedProjectManagementCharge = isNaN(parseFloat(projectManagementChargeValue)) ? null : parseFloat(projectManagementChargeValue);
+setProjectManagementCharge(parsedProjectManagementCharge);
+
+  // Calculate floor level charges
+  const floorLevelChargesValue = (subtotalValue * floorLevelHeightFactor) / 100;
+  setFloorLevelCharges(isNaN(floorLevelChargesValue) ? null : floorLevelChargesValue);
+
+    // Calculate Unit Adjustment Charges based on the provided formula
+    const unitAdjustmentChargesValue: number | null =
+    ((subtotalValue as unknown) as number) * ((adjustmentFactor as unknown) as number) / 100;
+  
+  setUnitAdjustmentCharges(isNaN(unitAdjustmentChargesValue) ? null : unitAdjustmentChargesValue);
+
+  // Calculate grand-total
+  const grandTotalValue =
+    (subtotalValue || 0) +
+    (cornerChargeValue || 0) +
+    (facingCharge || 0) +
+    (fillingChargeValue || 0) +
+    (remotenessCharge || 0) +
+    (parsedProjectManagementCharge || 0) +
+    (projectAdjustmentCharge || 0) +
+    (unitAdjustmentChargesValue || 0);
+
+setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
+}
 
   return (
-    <div className="container mx-auto p-4 sm:p-8 md:p-12 lg:p-16">
-
-    <Tabs defaultValue="apartment" className="w-[600px]">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="apartment">Apartment</TabsTrigger>
-        <TabsTrigger value="bungalow">Bungalow</TabsTrigger>
-      </TabsList>
-      <TabsContent value="apartment">
+    <div className="container mx-auto p-4 sm:p-8 md:p-12 lg:p-16 flex flex-wrap justify-around gap-8">
         <Card className="w-[1000px] flex-shrink-0">
           <CardHeader>
             <CardTitle>Apartment</CardTitle>
@@ -357,25 +390,27 @@ const handleGetQuotation = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
+          
 
-            <div className="flex flex-wrap space-y-1">
+            {/* <div className="flex flex-wrap space-y-1"> */}
 
               {/* Select branch section */}
-              <Card className="flex-shrink-0 gap-4">
+              <div className="w-full md:w-[48%] lg:w-[30%]">
+              <Card>
                 <CardHeader>
                   <CardTitle>Select Branch</CardTitle>
                 </CardHeader>
                 <CardContent>
                 <form>
       <div className="grid w-full items-center gap-4">
-        <div className="flex flex-col space-y-1.5">
-          <Label htmlFor="remoteness-factor">Remoteness Factor</Label>
-          <Input
-            id="remoteness-factor"
-            placeholder="Enter Remoteness Factor"
-            value={remotenessFactor}
-            onChange={(e) => setRemotenessFactor(e.target.value)}
-          />
+      <div className="flex flex-col space-y-1.5">
+  <Label htmlFor="remoteness-factor">Remoteness Factor</Label>
+  <Input
+  id="remoteness-factor"
+  placeholder="Enter Remoteness Factor"
+  value={remotenessFactor !== null ? remotenessFactor.toString() : ''}
+  onChange={(e) => setRemotenessFactor(parseFloat(e.target.value) || 0)}
+/>
           <Label htmlFor="base-builtup-rate">Base Builtup rate (raw)</Label>
           <Input
             id="base-builtup-rate"
@@ -442,14 +477,10 @@ const handleGetQuotation = () => {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Display the companyTotal */}
-      <div>
-        <h3>Company Total: ${companyTotal.toFixed(2)}</h3>
-      </div>
               </div>
               </div>
             </CardContent>
-
+          
               {/* model section */}
               <Card className="w-[350px] flex-shrink-0">
                 <CardHeader>
@@ -500,7 +531,8 @@ const handleGetQuotation = () => {
     </Card>
 
               {/* unit section */}
-              <Card className="w-[350px] flex-shrink-0">
+              <div className="w-full md:w-[48%] lg:w-[30%]">
+              <Card>
                 <CardHeader>
                   <CardTitle>Select Unit</CardTitle>
                 </CardHeader>
@@ -590,6 +622,7 @@ const handleGetQuotation = () => {
         </form>
       </CardContent>
     </Card>
+    </div>
 
               {/* project section */}
               <Card className="w-[500px]">
@@ -691,48 +724,48 @@ const handleGetQuotation = () => {
         </form>
       </CardContent>
     </Card>
-    <CardFooter>
+
+          </Card>
+          <CardFooter>
   <Button onClick={handleGetQuotation}>Get Quotation</Button>
 </CardFooter>
-          </Card>
+
+
 
           <Card>
       <CardHeader>
               <CardTitle>Total Value</CardTitle>
             </CardHeader>
             <CardContent>
-            {landShare !== null && <h3>Land share per unit: {landShare}</h3>}
-            {facingFactor !== null && <h3>Facing Factor: {facingFactor * 100}%</h3>}
+            <h3>Company Total: INR {companyTotal.toFixed(2)}</h3>
+            {landShare !== null && <h3 className="mt-4">Land share per unit: {landShare}</h3>}
+    {facingFactor !== null && <h3 className="mt-4">Facing Factor: {facingFactor * 100}%</h3>}
 
-            {selectedCornerPlot !== undefined && (
-  <h3>Corner Plot Factor: {selectedCornerPlot === "yes" ? 1 : 0}</h3>
-)}
+    {selectedCornerPlot !== undefined && (
+      <h3 className="mt-4">Corner Plot Factor: {selectedCornerPlot === "yes" ? 1 : 0}</h3>
+    )}
 
-<h3>Floor Level Factor: {floorLevelHeightFactor}%</h3>
+    <h3 className="mt-4">Floor Level Factor: {floorLevelHeightFactor}%</h3>
 
-<h3>Net selling land rate: {netSellingLandRate !== null ? netSellingLandRate : 'N/A'}</h3>
-{landPrice !== null && <h3>Land Price: {landPrice}</h3>}
+    <h3 className="mt-4">Net selling land rate: {netSellingLandRate !== null ? netSellingLandRate : 'N/A'}</h3>
+    {landPrice !== null && <h3 className="mt-4">Land Price: {landPrice}</h3>}
 
-{buildingPrice !== null && <h3>Building Price: {buildingPrice}</h3>}
+    {buildingPrice !== null && <h3 className="mt-4">Building Price: {buildingPrice}</h3>}
 
-{subtotal !== null && <h3>Subtotal: {subtotal}</h3>}
-{cornerCharge !== null && <h3>Corner Charge: {cornerCharge}</h3>}
-<h3>Facing Charge: {facingFactor !== null && subtotal !== null ? subtotal * facingFactor : 'N/A'}</h3>
-{fillingCharge !== null && <h3>Filling Charge: {fillingCharge}</h3>}
-        <h3>Remoteness Charge</h3>
-        <h3>Project management charge</h3>
-        <h3>Project adjustment charge</h3>
-        <h3>Floor level charges</h3>
-        <h3>Unit adjustment charges</h3>
-        <h3>Grand total</h3>
+    {subtotal !== null && <h3 className="mt-4">Subtotal: {subtotal}</h3>}
+    {cornerCharge !== null && <h3 className="mt-4">Corner Charge: {cornerCharge}</h3>}
+    <h3 className="mt-4">Facing Charge: {facingFactor !== null && subtotal !== null ? subtotal * facingFactor : 'N/A'}</h3>
+    {fillingCharge !== null && <h3 className="mt-4">Filling Charge: {fillingCharge}</h3>}
+    {remotenessCharge !== null && <h3 className="mt-4">Remoteness Charge: {remotenessCharge}</h3>}
+    {projectManagementCharge !== null && <h3 className="mt-4">Project Adjustment Charge: {projectManagementCharge}</h3>}
+    {floorLevelCharges !== null && <h3 className="mt-4">Floor Level Charges: {floorLevelCharges}</h3>}
+    {unitAdjustmentCharges !== null && <h3 className="mt-4">Unit Adjustment Charges: {unitAdjustmentCharges}</h3>}
+    {grandTotal !== null && <h3 className="mt-6 text-2xl font-bold">Grand Total: {grandTotal}</h3>}
+
 
         </CardContent>
     </Card>
-        </TabsContent>
-        <TabsContent value="bungalow">
-        
-        </TabsContent>
-      </Tabs>
+
     </div>
   );
 };
