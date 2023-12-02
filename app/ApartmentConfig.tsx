@@ -124,7 +124,6 @@ const handleInputChange = (field: string, value: string) => {
   const [floorPlateCovered, setFloorPlateCovered] = useState('');
   const [totalCoveredArea, setTotalCoveredArea] = useState('');
   const [numberOfFloors, setNumberOfFloors] = useState('');
-  const [landShare, setLandShare] = useState<number | null>(null);
   const calculateLandShare = () => {
     // Check if all input values are provided
     if (flatCovered && floorPlateCovered && totalCoveredArea && numberOfFloors) {
@@ -239,7 +238,6 @@ const [landValueSellFactor, setLandValueSellFactor] = useState('');
 const [developmentCharge, setDevelopmentCharge] = useState('');
 const [legalCharge, setLegalCharge] = useState('');
 const [adjustmentFactor, setAdjustmentFactor] = useState('');
-const [fillingRate, setFillingRate] = useState('');
 const [totalArea, setTotalArea] = useState('');
 const [projectManagement, setProjectManagement] = useState('');
 
@@ -281,7 +279,12 @@ const handleDetailsButtonClick = () => {
   // Trigger calculation for net selling land rate
   calculateNetSellingLandRate();
 };
-const [fillingDepth, setFillingDepth] = useState(0);
+const [fillingDepth, setFillingDepth] = useState<number>(0);
+const [landShare, setLandShare] = useState<number | null>(null);
+const [fillingRate, setFillingRate] = useState<number | null>(null);
+
+// ...
+
 const fillingChargeValue = (landShare || 0) * (fillingRate || 0) * fillingDepth;
 
 
