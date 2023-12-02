@@ -1,7 +1,7 @@
 // ApartmentConfig.tsx
 /* @jsxImportSource react */
 "use client"; 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -35,7 +35,78 @@ const ApartmentConfig: React.FC = () => {
     const [showSuperDeluxeMarkup, setShowSuperDeluxeMarkup] = useState(false);
     const [showLuxuryMarkup, setShowLuxuryMarkup] = useState(false);
     const [showSuperLuxuryMarkup, setShowSuperLuxuryMarkup] = useState(false);
+    const [additionalBuiltUpArea, setAdditionalBuiltUpArea] = useState<string>('');
     
+const [additionalLandArea, setAdditionalLandArea] = useState<string>('');
+
+// Handler for updating additional built-up area
+const handleAdditionalBuiltUpAreaChange = (value: string) => {
+  setAdditionalBuiltUpArea(value);
+};
+
+const [landSharePerUnit, setLandSharePerUnit] = useState<number | null>(null);
+const [landPrice, setLandPrice] = useState<number | null>(null);
+const [buildingPrice, setBuildingPrice] = useState<number | null>(null);
+const [subtotal, setSubtotal] = useState<number | null>(null);
+const [facingCharge, setFacingCharge] = useState<number | null>(null);
+const [cornerCharge, setCornerCharge] = useState<number | null>(null);
+const [fillingCharge, setFillingCharge] = useState<number | null>(null);
+const [remotenessCharge, setRemotenessCharge] = useState<number | null>(null);
+const [projectManagementCharge, setProjectManagementCharge] = useState<number | null>(null);
+const [projectAdjustmentCharge, setProjectAdjustmentCharge] = useState<number | null>(null);
+const [floorLevelCharges, setFloorLevelCharges] = useState<number | null>(null);
+const [unitAdjustmentCharges, setUnitAdjustmentCharges] = useState<number | null>(null);
+const [grandTotal, setGrandTotal] = useState<number | null>(null);
+const [cornerFactor, setCornerFactor] = useState<number | null>(null);
+    const [remotenessFactor, setRemotenessFactor] = useState('');
+    const [baseBuiltupRate, setBaseBuiltupRate] = useState('');
+    const [builtupRateWithFloor, setBuiltupRateWithFloor] = useState('');
+
+          // State to store company total
+  const [companyTotal, setCompanyTotal] = useState<number>(0);
+  // Function to update company total based on user selections
+  const updateCompanyTotal = () => {
+    let total = 0;
+    // Add values based on selected options
+    if (showStatusBar) total += 1000.00;
+    if (showActivityBar) total += 200.00;
+    if (showDeluxeMarkup) total += 200.00;
+    if (showSuperDeluxeMarkup) total += 200.00;
+    if (showLuxuryMarkup) total += 200.00;
+    if (showSuperLuxuryMarkup) total += 200.00;
+
+    // Update the companyTotal state
+    setCompanyTotal(total);
+  };
+
+// Handler for updating user-entered details
+const handleInputChange = (field: string, value: string) => {
+  // Update state for the relevant input field
+  switch (field) {
+    case 'landRate':
+      setLandRate(value);
+      break;
+    case 'currentLandRate':
+      setCurrentLandRate(value);
+      break;
+    case 'landValueSellFactor':
+      setLandValueSellFactor(value);
+      break;
+    // Add cases for other input fields
+    default:
+      break;
+  }
+
+  // Trigger calculation for net selling land rate
+  calculateNetSellingLandRate();
+};
+
+  // Handler for dropdown menu selection
+  const handleDropdownSelection = (field: string, value: string) => {
+    // Update user-entered details based on the dropdown selection
+    handleInputChange(field, value);
+    // You can add more logic here if needed
+  };
 
   // State to store user-entered details
   const [userDetails, setUserDetails] = useState({
@@ -45,44 +116,33 @@ const ApartmentConfig: React.FC = () => {
     // Add other details as needed
   });
 
-    // State to store input values
-    const [remotenessFactor, setRemotenessFactor] = useState('');
-    const [baseBuiltupRate, setBaseBuiltupRate] = useState('');
-    const [builtupRateWithFloor, setBuiltupRateWithFloor] = useState('');
-
-  // Handler for updating user-entered details
-  const handleInputChange = (field: string, value: string) => {
-    setUserDetails((prevDetails) => ({
-      ...prevDetails,
-      [field]: value,
-    }));
-  };
-
-  // Handler for dropdown menu selection
-  const handleDropdownSelection = (field: string, value: string) => {
-    // Update user-entered details based on the dropdown selection
-    handleInputChange(field, value);
-    // You can add more logic here if needed
-  };
-
+  // useEffect to run the updateCompanyTotal function whenever the selected options change
+  useEffect(() => {
+    updateCompanyTotal();
+  }, [showStatusBar, showActivityBar, showDeluxeMarkup, showSuperDeluxeMarkup, showLuxuryMarkup, showSuperLuxuryMarkup, updateCompanyTotal]);  
   const [flatCovered, setFlatCovered] = useState('');
   const [floorPlateCovered, setFloorPlateCovered] = useState('');
   const [totalCoveredArea, setTotalCoveredArea] = useState('');
   const [numberOfFloors, setNumberOfFloors] = useState('');
   const [landShare, setLandShare] = useState<number | null>(null);
-
-    const calculateLandShare = () => {
-      // Check if all input values are provided
-      if (flatCovered && totalCoveredArea) {
-        const landShareValue = parseFloat(flatCovered) / parseFloat(totalCoveredArea);
-        setLandShare(isNaN(landShareValue) ? null : landShareValue);
-      }
-    };
+  const calculateLandShare = () => {
+    // Check if all input values are provided
+    if (flatCovered && floorPlateCovered && totalCoveredArea && numberOfFloors) {
+      const totalLandArea = parseFloat(totalArea);
+      const flatCoveredArea = parseFloat(flatCovered);
+      const floorPlateCoveredArea = parseFloat(floorPlateCovered);
+      const totalCoveredAreaValue = parseFloat(totalCoveredArea);
+      const numberOfFloorsValue = parseFloat(numberOfFloors);
   
-    const handleDetailsClick = () => {
-      calculateLandShare();
-    };
-
+      // Calculate the land share using the provided formula
+      const landShareValue =
+        (totalLandArea * flatCoveredArea + totalLandArea * floorPlateCoveredArea * numberOfFloorsValue) /
+        totalCoveredAreaValue;
+  
+      setLandShare(isNaN(landShareValue) ? null : landShareValue);
+    }
+  };
+  
     const [selectedCornerPlot, setSelectedCornerPlot] = useState<string | undefined>(undefined);
 
 
@@ -92,27 +152,42 @@ const handleCornerPlotChange = (value: string) => {
 };
 
 
+
 // state for face selection
 
 const [selectedFacing, setSelectedFacing] = useState<string | undefined>(undefined);
   const [facingFactor, setFacingFactor] = useState<number | null>(null);
 
+  useEffect(() => {
+    updateCompanyTotal();
+  }, [showStatusBar, showActivityBar, showDeluxeMarkup, showSuperDeluxeMarkup, showLuxuryMarkup, showSuperLuxuryMarkup, updateCompanyTotal, selectedFacing]);
   // ... other functions
 
-  // Function to handle facing selection
-  const handleFacingChange = (value: string) => {
-    setSelectedFacing(value);
+  const handleLandRateChange = (value: string) => {
+    setLandRate(value);
+    // Add other logic if needed
+  };
+  
+  const handleCurrentLandRateChange = (value: string) => {
+    setCurrentLandRate(value);
+    // Add other logic if needed
+  };
 
-    // Map facing values to corresponding percentages
+  // Function to handle facing selection
+  const calculateFacingFactor = (facing: string) => {
+    // Calculate facing factor based on the selected value
     const facingPercentageMap: { [key: string]: number } = {
       east: 0.05,   // 5%
       west: 0.04,   // 4%
       north: 0.03,  // 3%
       south: 0.02,  // 2%
     };
-
-    // Set facing factor based on the selected value
-    setFacingFactor(facingPercentageMap[value] || 0);
+  
+    setFacingFactor(facingPercentageMap[facing] || 0);
+  };
+  
+  const calculateCornerFactor = (corner: string) => {
+    setCornerFactor(corner === "yes" ? 1 : 0);
   };
 
 // Define state for floor level selection
@@ -150,13 +225,13 @@ const calculateFloorLevelFactor = (floorLevel: string | null): number => {
 
 // Update the state when the dropdown selection changes
 const handleFloorLevelChange = (value: string | null) => {
-  setSelectedFloorLevel(value);
+  setSelectedFloorLevel(value !== null ? value : undefined);
+
 
   // Calculate and store the corresponding height factor
   const heightFactor = calculateFloorLevelFactor(value);
   setFloorLevelHeightFactor(heightFactor);
 }
-
 // State variables for land details and project management
 const [landRate, setLandRate] = useState('');
 const [currentLandRate, setCurrentLandRate] = useState('');
@@ -171,19 +246,31 @@ const [projectManagement, setProjectManagement] = useState('');
 // State variable for calculated net selling land rate
 const [netSellingLandRate, setNetSellingLandRate] = useState<number | null>(null);
 
+const handleFillingChargeChange = (value: string) => {
+  // Assuming 'value' is the user input for filling depth
+  const fillingDepth = parseFloat(value) || 0;
+
+
+  setFillingCharge(isNaN(fillingChargeValue) ? null : fillingChargeValue);
+};
+
 // Handler for calculating net selling land rate
 const calculateNetSellingLandRate = () => {
-  // Ensure all input values are provided
-  if (currentLandRate && landRate && landValueSellFactor && developmentCharge && legalCharge) {
-    const netSellingRate = (
-      parseFloat(landValueSellFactor) *
-      (parseFloat(currentLandRate) + parseFloat(landRate))
-    ) + parseFloat(developmentCharge) + parseFloat(legalCharge);
-    
-    setNetSellingLandRate(isNaN(netSellingRate) ? null : netSellingRate);
-  } else {
-    setNetSellingLandRate(null);
-  }
+  // Provide default values for inputs if they are not provided
+  const defaultedLandRate = landRate === '' ? 0 : parseFloat(landRate);
+  const defaultedCurrentLandRate = currentLandRate === '' ? 0 : parseFloat(currentLandRate);
+  const defaultedDevelopmentCharge = developmentCharge === '' ? 200 : parseFloat(developmentCharge);
+  const defaultedLegalCharge = legalCharge === '' ? 200 : parseFloat(legalCharge);
+
+  // Calculate net selling land rate using default or provided values
+  const netSellingRate =
+    parseFloat(landValueSellFactor) *
+    (defaultedCurrentLandRate + defaultedLandRate) +
+    defaultedDevelopmentCharge +
+    defaultedLegalCharge;
+
+  // Set the calculated value or null if NaN
+  setNetSellingLandRate(isNaN(netSellingRate) ? null : netSellingRate);
 };
 
 // Handler for displaying user-entered details
@@ -193,6 +280,61 @@ const handleDetailsButtonClick = () => {
 
   // Trigger calculation for net selling land rate
   calculateNetSellingLandRate();
+};
+const [fillingDepth, setFillingDepth] = useState(0);
+const fillingChargeValue = (landShare || 0) * (fillingRate || 0) * fillingDepth;
+
+
+// Handler for "Get Quotation" button
+const handleGetQuotation = () => {
+  // Trigger calculation for net selling land rate
+  calculateNetSellingLandRate();
+  calculateLandShare();
+  if (landShare !== null) {
+    console.log('Land share per unit:', landShare);}
+  
+    
+        // Calculate land price based on the provided formula
+        const netSellingLandRateValue = netSellingLandRate || 400; // Use default value if null
+        const landShareValue = landShare || 0;
+    
+        const additionalLandAreaValue = parseFloat(additionalLandArea) || 0;
+        const landPriceValue = netSellingLandRateValue * (landShareValue + additionalLandAreaValue);
+    
+        setLandPrice(isNaN(landPriceValue) ? null : landPriceValue);
+        
+    // Calculate building price based on the provided formula
+    const flatCoveredValue = parseFloat(flatCovered) || 0;
+    const companyTotalValue = companyTotal || 0;
+    const additionalBuiltUpAreaValue = parseFloat(additionalBuiltUpArea) || 0;
+
+
+    const buildingPriceValue = flatCoveredValue * companyTotalValue + additionalBuiltUpAreaValue;
+
+    setBuildingPrice(isNaN(buildingPriceValue) ? null : buildingPriceValue);
+    
+
+    // Display the calculated values in the console for now
+    console.log('Land Price:', landPrice);
+    console.log('Building Price:', buildingPrice);
+
+    
+  // Calculate Subtotal
+  const subtotalValue = landPriceValue + buildingPriceValue;
+  setSubtotal(isNaN(subtotalValue) ? null : subtotalValue);
+
+  //calculate corner-charge
+  const cornerFactor = selectedCornerPlot === "yes" ? 1 : 0;
+  const cornerChargeValue = (subtotalValue * cornerFactor) / 100;
+  setCornerCharge(isNaN(cornerChargeValue) ? null : cornerChargeValue);
+
+  // //calculate facing-charge
+  // calculateFacingFactor(selectedFacing || ''); // Pass the selected facing value
+  // calculateCornerFactor(selectedCornerPlot || ''); // Pass the selected corner value
+  if (selectedFacing !== undefined) {
+    calculateFacingFactor(selectedFacing);
+  }
+
 };
 
   return (
@@ -252,54 +394,55 @@ const handleDetailsButtonClick = () => {
               </Card>
 
               <div className="space-y-1">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline">Apartment Type</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56">
-                    <DropdownMenuSeparator />
-                    <DropdownMenuCheckboxItem
-                      checked={showStatusBar}
-                      onCheckedChange={setShowStatusBar}
-                    
-                    >
-                      Raw Markup
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={showActivityBar}
-                      onCheckedChange={setShowActivityBar}
-                    
-                    >
-                      Economy Markup
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-  checked={showDeluxeMarkup}
-  onCheckedChange={setShowDeluxeMarkup}
->
-  Deluxe Markup
-</DropdownMenuCheckboxItem>
+              <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline">Apartment Type</Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuSeparator />
+          <DropdownMenuCheckboxItem
+            checked={showStatusBar}
+            onCheckedChange={setShowStatusBar}
+          >
+            Raw Markup
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem
+            checked={showActivityBar}
+            onCheckedChange={setShowActivityBar}
+          >
+            Economy Markup
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem
+            checked={showDeluxeMarkup}
+            onCheckedChange={setShowDeluxeMarkup}
+          >
+            Deluxe Markup
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem
+            checked={showSuperDeluxeMarkup}
+            onCheckedChange={setShowSuperDeluxeMarkup}
+          >
+            Super Deluxe Markup
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem
+            checked={showLuxuryMarkup}
+            onCheckedChange={setShowLuxuryMarkup}
+          >
+            Luxury Markup
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem
+            checked={showSuperLuxuryMarkup}
+            onCheckedChange={setShowSuperLuxuryMarkup}
+          >
+            Super Luxury Markup
+          </DropdownMenuCheckboxItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-<DropdownMenuCheckboxItem
-  checked={showSuperDeluxeMarkup}
-  onCheckedChange={setShowSuperDeluxeMarkup}
->
-  Super Deluxe Markup
-</DropdownMenuCheckboxItem>
-
-<DropdownMenuCheckboxItem
-  checked={showLuxuryMarkup}
-  onCheckedChange={setShowLuxuryMarkup}
->
-  Luxury Markup
-</DropdownMenuCheckboxItem>
-
-<DropdownMenuCheckboxItem
-  checked={showSuperLuxuryMarkup}
-  onCheckedChange={setShowSuperLuxuryMarkup}>
-  Super Luxury Markup
-  </DropdownMenuCheckboxItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+      {/* Display the companyTotal */}
+      <div>
+        <h3>Company Total: ${companyTotal.toFixed(2)}</h3>
+      </div>
               </div>
               </div>
             </CardContent>
@@ -351,10 +494,6 @@ const handleDetailsButtonClick = () => {
       </div>
     </form>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button onClick={handleDetailsClick}>Details</Button>
-      </CardFooter>
-      {landShare !== null && <h3>Land share per unit: {landShare}</h3>}
     </Card>
 
               {/* unit section */}
@@ -370,9 +509,13 @@ const handleDetailsButtonClick = () => {
               <Input id="name" placeholder="Can be adjusted at unit level by Sales, requires approval" />
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="filling-depth">Filling Depth</Label>
-              <Input id="name" placeholder="filling depth as per required in Feet unit" />
-            </div>
+  <Label htmlFor="filling-depth">Filling Depth</Label>
+  <Input
+    id="filling-depth"
+    placeholder="Filling depth as per required in Feet unit"
+    onChange={(e) => handleFillingChargeChange(e.target.value)}
+  />
+</div>
             <div className="flex flex-col space-y-1.5">
             <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -418,7 +561,7 @@ const handleDetailsButtonClick = () => {
         <DropdownMenuContent className="w-56">
           <DropdownMenuLabel>Facing Side based on Unit Selected</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuRadioGroup value={selectedFacing} onValueChange={handleFacingChange}>
+          <DropdownMenuRadioGroup value={selectedFacing} onValueChange={calculateFacingFactor}>
             <DropdownMenuRadioItem value="east">East</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="west">West</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="north">North</DropdownMenuRadioItem>
@@ -427,10 +570,15 @@ const handleDetailsButtonClick = () => {
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="additional-area">Additional Built-up Area</Label>
-              <Input id="name" placeholder="Additional/Semi-finished Builtup Area" />
-            </div>
+    <div className="flex flex-col space-y-1.5">
+  <Label htmlFor="additionalBuiltUpAreaValue">Additional Built-up Area</Label>
+  <Input
+    id="additionalBuiltUpAreaValue"
+    placeholder="Additional/Semi-finished Builtup Area"
+    value={additionalBuiltUpArea}
+    onChange={(e) => handleAdditionalBuiltUpAreaChange(e.target.value)}
+  />
+</div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="additional-land-area">Additional Land Area</Label>
               <Input id="name" placeholder="Additional Land Area" />
@@ -438,9 +586,6 @@ const handleDetailsButtonClick = () => {
           </div>
         </form>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button>Details</Button>
-      </CardFooter>
     </Card>
 
               {/* project section */}
@@ -511,13 +656,13 @@ const handleDetailsButtonClick = () => {
 </div>
 
 <div className="flex flex-col space-y-1.5">
-  <Label htmlFor="filling-rate">Filling Rate</Label>
-  <Input
-    id="filling-rate"
-    placeholder="Enter filling rate"
-    value={fillingRate}
-    onChange={(e) => setFillingRate(e.target.value)}
-  />
+<Label htmlFor="filling-depth">Filling Depth</Label>
+<Input
+  id="filling-depth"
+  placeholder="Filling depth as per required in Feet unit"
+  value={fillingDepth}
+  onChange={(e) => setFillingDepth(parseFloat(e.target.value) || 0)}
+/>
 </div>
 
 <div className="flex flex-col space-y-1.5">
@@ -529,19 +674,6 @@ const handleDetailsButtonClick = () => {
     onChange={(e) => setTotalArea(e.target.value)}
   />
 </div>
-
-            <h3>Facing Factor: {facingFactor * 100}%</h3>
-
-
-            {selectedCornerPlot !== undefined && (
-  <h3>Corner Plot Factor: {selectedCornerPlot === "yes" ? 1 : 0}</h3>
-)}
-
-
-<h3>Floor Level Factor: {floorLevelHeightFactor}%</h3>
-
-<h3>Net selling land rate: {netSellingLandRate !== null ? netSellingLandRate : 'N/A'}</h3>
-
 
             <div className="flex flex-col space-y-1.5">
   <Label htmlFor="project-management">Project Management %</Label>
@@ -556,9 +688,9 @@ const handleDetailsButtonClick = () => {
         </form>
       </CardContent>
     </Card>
-            <CardFooter>
-              <Button>Get Quotation</Button>
-            </CardFooter>
+    <CardFooter>
+  <Button onClick={handleGetQuotation}>Get Quotation</Button>
+</CardFooter>
           </Card>
 
           <Card>
@@ -566,13 +698,24 @@ const handleDetailsButtonClick = () => {
               <CardTitle>Total Value</CardTitle>
             </CardHeader>
             <CardContent>
-      <h3>Land Price: </h3>
-        <h3>Building Price: </h3>
-        <h3>SubTotal: </h3>
-        <h3>Sub Total: </h3>
-        <h3>Corner Charge: </h3>
-        <h3>Facing Charge: </h3>
-        <h3>Filling Charge: </h3>
+            {landShare !== null && <h3>Land share per unit: {landShare}</h3>}
+            {facingFactor !== null && <h3>Facing Factor: {facingFactor * 100}%</h3>}
+
+            {selectedCornerPlot !== undefined && (
+  <h3>Corner Plot Factor: {selectedCornerPlot === "yes" ? 1 : 0}</h3>
+)}
+
+<h3>Floor Level Factor: {floorLevelHeightFactor}%</h3>
+
+<h3>Net selling land rate: {netSellingLandRate !== null ? netSellingLandRate : 'N/A'}</h3>
+{landPrice !== null && <h3>Land Price: {landPrice}</h3>}
+
+{buildingPrice !== null && <h3>Building Price: {buildingPrice}</h3>}
+
+{subtotal !== null && <h3>Subtotal: {subtotal}</h3>}
+{cornerCharge !== null && <h3>Corner Charge: {cornerCharge}</h3>}
+<h3>Facing Charge: {facingFactor !== null && subtotal !== null ? subtotal * facingFactor : 'N/A'}</h3>
+{fillingCharge !== null && <h3>Filling Charge: {fillingCharge}</h3>}
         <h3>Remoteness Charge</h3>
         <h3>Project management charge</h3>
         <h3>Project adjustment charge</h3>
@@ -582,15 +725,11 @@ const handleDetailsButtonClick = () => {
 
         </CardContent>
     </Card>
-
-
-
         </TabsContent>
         <TabsContent value="bungalow">
-         
+        
         </TabsContent>
       </Tabs>
-
     </div>
   );
 };
