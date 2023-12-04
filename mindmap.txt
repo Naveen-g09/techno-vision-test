@@ -1,0 +1,597 @@
+// ApartmentConfig.tsx
+/* @jsxImportSource react */
+"use client"; 
+import React, { useState } from 'react';
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
+
+import { DropdownMenu,DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuSeparator, DropdownMenuTrigger,   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem, } from "@/components/ui/dropdown-menu";
+
+type Checked = boolean;
+
+const ApartmentConfig: React.FC = () => {
+    const [showStatusBar, setShowStatusBar] = useState<Checked>(true);
+    const [showActivityBar, setShowActivityBar] = useState<Checked>(false);
+    const [showPanel, setShowPanel] = useState<Checked>(false);
+    const [position, setPosition] = React.useState("bottom");
+    const [showDeluxeMarkup, setShowDeluxeMarkup] = useState(false);
+    const [showSuperDeluxeMarkup, setShowSuperDeluxeMarkup] = useState(false);
+    const [showLuxuryMarkup, setShowLuxuryMarkup] = useState(false);
+    const [showSuperLuxuryMarkup, setShowSuperLuxuryMarkup] = useState(false);
+    
+
+  // State to store user-entered details
+  const [userDetails, setUserDetails] = useState({
+    unitCovered: "",
+    plateCovered: "",
+    numberOfFloors: "",
+    // Add other details as needed
+  });
+
+    // State to store input values
+    const [remotenessFactor, setRemotenessFactor] = useState('');
+    const [baseBuiltupRate, setBaseBuiltupRate] = useState('');
+    const [builtupRateWithFloor, setBuiltupRateWithFloor] = useState('');
+
+  // Handler for updating user-entered details
+  const handleInputChange = (field: string, value: string) => {
+    setUserDetails((prevDetails) => ({
+      ...prevDetails,
+      [field]: value,
+    }));
+  };
+
+  // Handler for dropdown menu selection
+  const handleDropdownSelection = (field: string, value: string) => {
+    // Update user-entered details based on the dropdown selection
+    handleInputChange(field, value);
+    // You can add more logic here if needed
+  };
+
+  const [flatCovered, setFlatCovered] = useState('');
+  const [floorPlateCovered, setFloorPlateCovered] = useState('');
+  const [totalCoveredArea, setTotalCoveredArea] = useState('');
+  const [numberOfFloors, setNumberOfFloors] = useState('');
+  const [landShare, setLandShare] = useState<number | null>(null);
+
+    const calculateLandShare = () => {
+      // Check if all input values are provided
+      if (flatCovered && totalCoveredArea) {
+        const landShareValue = parseFloat(flatCovered) / parseFloat(totalCoveredArea);
+        setLandShare(isNaN(landShareValue) ? null : landShareValue);
+      }
+    };
+  
+    const handleDetailsClick = () => {
+      calculateLandShare();
+    };
+
+    const [selectedCornerPlot, setSelectedCornerPlot] = useState<string | undefined>(undefined);
+
+
+// Update the state when the dropdown selection changes
+const handleCornerPlotChange = (value: string) => {
+  setSelectedCornerPlot(value);
+};
+
+
+// state for face selection
+
+const [selectedFacing, setSelectedFacing] = useState<string | undefined>(undefined);
+  const [facingFactor, setFacingFactor] = useState<number | null>(null);
+
+  // ... other functions
+
+  // Function to handle facing selection
+  const handleFacingChange = (value: string) => {
+    setSelectedFacing(value);
+
+    // Map facing values to corresponding percentages
+    const facingPercentageMap: { [key: string]: number } = {
+      east: 0.05,   // 5%
+      west: 0.04,   // 4%
+      north: 0.03,  // 3%
+      south: 0.02,  // 2%
+    };
+
+    // Set facing factor based on the selected value
+    setFacingFactor(facingPercentageMap[value] || 0);
+  };
+
+// Define state for floor level selection
+const [selectedFloorLevel, setSelectedFloorLevel] = useState<string | undefined>(undefined);
+
+const [floorLevelHeightFactor, setFloorLevelHeightFactor] = useState<number>(0);
+
+// Function to calculate floor level factor
+const calculateFloorLevelFactor = (floorLevel: string | null): number => {
+  switch (floorLevel) {
+    case "one":
+      return 0;
+    case "two":
+      return -2;
+    case "three":
+      return -4;
+    case "four":
+      return -6;
+    case "five":
+      return -8;
+    case "six":
+      return -10;
+    case "seven":
+      return -12;
+    case "eight":
+      return -14;
+    case "nine":
+      return -16;
+    case "ten":
+      return -18;
+    default:
+      return 0;
+  }
+};
+
+// Update the state when the dropdown selection changes
+const handleFloorLevelChange = (value: string | null) => {
+  setSelectedFloorLevel(value);
+
+  // Calculate and store the corresponding height factor
+  const heightFactor = calculateFloorLevelFactor(value);
+  setFloorLevelHeightFactor(heightFactor);
+}
+
+// State variables for land details and project management
+const [landRate, setLandRate] = useState('');
+const [currentLandRate, setCurrentLandRate] = useState('');
+const [landValueSellFactor, setLandValueSellFactor] = useState('');
+const [developmentCharge, setDevelopmentCharge] = useState('');
+const [legalCharge, setLegalCharge] = useState('');
+const [adjustmentFactor, setAdjustmentFactor] = useState('');
+const [fillingRate, setFillingRate] = useState('');
+const [totalArea, setTotalArea] = useState('');
+const [projectManagement, setProjectManagement] = useState('');
+
+// State variable for calculated net selling land rate
+const [netSellingLandRate, setNetSellingLandRate] = useState<number | null>(null);
+
+// Handler for calculating net selling land rate
+const calculateNetSellingLandRate = () => {
+  // Ensure all input values are provided
+  if (currentLandRate && landRate && landValueSellFactor && developmentCharge && legalCharge) {
+    const netSellingRate = (
+      parseFloat(landValueSellFactor) *
+      (parseFloat(currentLandRate) + parseFloat(landRate))
+    ) + parseFloat(developmentCharge) + parseFloat(legalCharge);
+    
+    setNetSellingLandRate(isNaN(netSellingRate) ? null : netSellingRate);
+  } else {
+    setNetSellingLandRate(null);
+  }
+};
+
+// Handler for displaying user-entered details
+const handleDetailsButtonClick = () => {
+  console.log('User Details:', userDetails);
+  // You can further process or display the details as needed
+
+  // Trigger calculation for net selling land rate
+  calculateNetSellingLandRate();
+};
+
+  return (
+    <div className="container mx-auto p-4 sm:p-8 md:p-12 lg:p-16">
+
+    <Tabs defaultValue="apartment" className="w-[600px]">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="apartment">Apartment</TabsTrigger>
+        <TabsTrigger value="bungalow">Bungalow</TabsTrigger>
+      </TabsList>
+      <TabsContent value="apartment">
+        <Card className="w-[1000px] flex-shrink-0">
+          <CardHeader>
+            <CardTitle>Apartment</CardTitle>
+            <CardDescription>
+              Add details here to get a quotation
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+
+            <div className="flex flex-wrap space-y-1">
+
+              {/* Select branch section */}
+              <Card className="flex-shrink-0 gap-4">
+                <CardHeader>
+                  <CardTitle>Select Branch</CardTitle>
+                </CardHeader>
+                <CardContent>
+                <form>
+      <div className="grid w-full items-center gap-4">
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="remoteness-factor">Remoteness Factor</Label>
+          <Input
+            id="remoteness-factor"
+            placeholder="Enter Remoteness Factor"
+            value={remotenessFactor}
+            onChange={(e) => setRemotenessFactor(e.target.value)}
+          />
+          <Label htmlFor="base-builtup-rate">Base Builtup rate (raw)</Label>
+          <Input
+            id="base-builtup-rate"
+            placeholder="Enter Base built-up rate(raw)"
+            value={baseBuiltupRate}
+            onChange={(e) => setBaseBuiltupRate(e.target.value)}
+          />
+          <Label htmlFor="builtup-rate-with-floor">Built-up rate with addition of floor</Label>
+          <Input
+            id="builtup-rate-with-floor"
+            placeholder="Base Built-up rate (raw) with addition of floor"
+            value={builtupRateWithFloor}
+            onChange={(e) => setBuiltupRateWithFloor(e.target.value)}
+          />
+        </div>
+      </div>
+    </form>
+                </CardContent>
+              </Card>
+
+              <div className="space-y-1">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline">Apartment Type</Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56">
+                    <DropdownMenuSeparator />
+                    <DropdownMenuCheckboxItem
+                      checked={showStatusBar}
+                      onCheckedChange={setShowStatusBar}
+                    
+                    >
+                      Raw Markup
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={showActivityBar}
+                      onCheckedChange={setShowActivityBar}
+                    
+                    >
+                      Economy Markup
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+  checked={showDeluxeMarkup}
+  onCheckedChange={setShowDeluxeMarkup}
+>
+  Deluxe Markup
+</DropdownMenuCheckboxItem>
+
+<DropdownMenuCheckboxItem
+  checked={showSuperDeluxeMarkup}
+  onCheckedChange={setShowSuperDeluxeMarkup}
+>
+  Super Deluxe Markup
+</DropdownMenuCheckboxItem>
+
+<DropdownMenuCheckboxItem
+  checked={showLuxuryMarkup}
+  onCheckedChange={setShowLuxuryMarkup}
+>
+  Luxury Markup
+</DropdownMenuCheckboxItem>
+
+<DropdownMenuCheckboxItem
+  checked={showSuperLuxuryMarkup}
+  onCheckedChange={setShowSuperLuxuryMarkup}>
+  Super Luxury Markup
+  </DropdownMenuCheckboxItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              </div>
+            </CardContent>
+
+              {/* model section */}
+              <Card className="w-[350px] flex-shrink-0">
+                <CardHeader>
+                  <CardTitle>Select Model</CardTitle>
+                </CardHeader>
+                <CardContent>
+                <form>
+      <div className="grid w-full items-center gap-4">
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="unit-covered">Flat Covered</Label>
+          <Input
+            id="flat-covered"
+            placeholder="One unit covered built up area (excluding parking)"
+            value={flatCovered}
+            onChange={(e) => setFlatCovered(e.target.value)}
+          />
+        </div>
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="plate-covered">Floor Plate covered</Label>
+          <Input
+            id="floor-plate-covered"
+            placeholder="Floor plate covered built up area (excluding parking)"
+            value={floorPlateCovered}
+            onChange={(e) => setFloorPlateCovered(e.target.value)}
+          />
+        </div>
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="total-covered-area">Total covered Area</Label>
+          <Input
+            id="total-covered-area"
+            placeholder="Total covered built up area of apartment (excluding parking)"
+            value={totalCoveredArea}
+            onChange={(e) => setTotalCoveredArea(e.target.value)}
+          />
+        </div>
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="floors">Number of Floors</Label>
+          <Input
+            id="number-of-floors"
+            placeholder="No. of Floors"
+            value={numberOfFloors}
+            onChange={(e) => setNumberOfFloors(e.target.value)}
+          />
+        </div>
+      </div>
+    </form>
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        <Button onClick={handleDetailsClick}>Details</Button>
+      </CardFooter>
+      {landShare !== null && <h3>Land share per unit: {landShare}</h3>}
+    </Card>
+
+              {/* unit section */}
+              <Card className="w-[350px] flex-shrink-0">
+                <CardHeader>
+                  <CardTitle>Select Unit</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form>
+                    <div className="grid w-full items-center gap-4">
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="adjustment-factor">Adjustment Factor</Label>
+              <Input id="name" placeholder="Can be adjusted at unit level by Sales, requires approval" />
+            </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="filling-depth">Filling Depth</Label>
+              <Input id="name" placeholder="filling depth as per required in Feet unit" />
+            </div>
+            <div className="flex flex-col space-y-1.5">
+            <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline">Floor Level</Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56">
+        <DropdownMenuLabel>Select your floor level</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuRadioGroup value={selectedFloorLevel} onValueChange={handleFloorLevelChange}>
+          <DropdownMenuRadioItem value="one">1</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="two">2</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="three">3</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="four">4</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="five">5</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="six">6</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="seven">7</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="eight">8</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="nine">9</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="ten">10</DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+            </div>
+            </div>
+            <div className="flex flex-col space-y-1.5">
+
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button variant="outline">Corner-Plot</Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent className="w-56">
+    <DropdownMenuRadioGroup value={selectedCornerPlot} onValueChange={handleCornerPlotChange}>
+      <DropdownMenuRadioItem value="yes">Yes</DropdownMenuRadioItem>
+      <DropdownMenuRadioItem value="no">No</DropdownMenuRadioItem>
+    </DropdownMenuRadioGroup>
+  </DropdownMenuContent>
+</DropdownMenu>
+<div className="flex flex-col space-y-1.5">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline">Facing</Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuLabel>Facing Side based on Unit Selected</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuRadioGroup value={selectedFacing} onValueChange={handleFacingChange}>
+            <DropdownMenuRadioItem value="east">East</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="west">West</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="north">North</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="south">South</DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="additional-area">Additional Built-up Area</Label>
+              <Input id="name" placeholder="Additional/Semi-finished Builtup Area" />
+            </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="additional-land-area">Additional Land Area</Label>
+              <Input id="name" placeholder="Additional Land Area" />
+            </div>
+          </div>
+        </form>
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        <Button>Details</Button>
+      </CardFooter>
+    </Card>
+
+              {/* project section */}
+              <Card className="w-[500px]">
+                <CardHeader>
+                  <CardTitle>Project Details</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form>
+                    <div className="grid w-full items-center gap-4">
+                    <div className="flex flex-col space-y-1.5">
+  <Label htmlFor="land-rate">Land rate</Label>
+  <Input
+    id="land-rate"
+    placeholder="Land rate at the time of purchase"
+    value={landRate}
+    onChange={(e) => setLandRate(e.target.value)}
+  />
+</div>
+
+<div className="flex flex-col space-y-1.5">
+  <Label htmlFor="current-land-rate">Current Land Rate</Label>
+  <Input
+    id="current-land-rate"
+    placeholder="Current land rate as per market value(Adding value)"
+    value={currentLandRate}
+    onChange={(e) => setCurrentLandRate(e.target.value)}
+  />
+</div>
+<div className="flex flex-col space-y-1.5">
+  <Label htmlFor="land-value">Land value sell factor</Label>
+  <Input
+    id="land-value"
+    placeholder="Enter land value sell factor"
+    value={landValueSellFactor}
+    onChange={(e) => setLandValueSellFactor(e.target.value)}
+  />
+</div>
+
+<div className="flex flex-col space-y-1.5">
+  <Label htmlFor="development-charge">Development Charge</Label>
+  <Input
+    id="development-charge"
+    placeholder="Enter development charge"
+    value={developmentCharge}
+    onChange={(e) => setDevelopmentCharge(e.target.value)}
+  />
+</div>
+
+<div className="flex flex-col space-y-1.5">
+  <Label htmlFor="legal-charge">Legal Charge</Label>
+  <Input
+    id="legal-charge"
+    placeholder="Enter legal charge"
+    value={legalCharge}
+    onChange={(e) => setLegalCharge(e.target.value)}
+  />
+</div>
+
+<div className="flex flex-col space-y-1.5">
+  <Label htmlFor="adjustment-factor">Adjustment-Factor</Label>
+  <Input
+    id="adjustment-factor"
+    placeholder="Enter adjustment factor"
+    value={adjustmentFactor}
+    onChange={(e) => setAdjustmentFactor(e.target.value)}
+  />
+</div>
+
+<div className="flex flex-col space-y-1.5">
+  <Label htmlFor="filling-rate">Filling Rate</Label>
+  <Input
+    id="filling-rate"
+    placeholder="Enter filling rate"
+    value={fillingRate}
+    onChange={(e) => setFillingRate(e.target.value)}
+  />
+</div>
+
+<div className="flex flex-col space-y-1.5">
+  <Label htmlFor="total-area">Total land Area</Label>
+  <Input
+    id="total-area"
+    placeholder="Enter total land area"
+    value={totalArea}
+    onChange={(e) => setTotalArea(e.target.value)}
+  />
+</div>
+
+            <h3>Facing Factor: {facingFactor * 100}%</h3>
+
+
+            {selectedCornerPlot !== undefined && (
+  <h3>Corner Plot Factor: {selectedCornerPlot === "yes" ? 1 : 0}</h3>
+)}
+
+
+<h3>Floor Level Factor: {floorLevelHeightFactor}%</h3>
+
+<h3>Net selling land rate: {netSellingLandRate !== null ? netSellingLandRate : 'N/A'}</h3>
+
+
+            <div className="flex flex-col space-y-1.5">
+  <Label htmlFor="project-management">Project Management %</Label>
+  <Input
+    id="project-management"
+    placeholder="project management charges such as advertisements etc. in %"
+    value={projectManagement}
+    onChange={(e) => setProjectManagement(e.target.value)}
+  />
+</div>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+            <CardFooter>
+              <Button>Get Quotation</Button>
+            </CardFooter>
+          </Card>
+
+          <Card>
+      <CardHeader>
+              <CardTitle>Total Value</CardTitle>
+            </CardHeader>
+            <CardContent>
+            <h3>Land Price: {landPrice !== null ? landPrice : 'N/A'}</h3>
+            <h3>Building Price: {buildingPrice !== null ? buildingPrice : 'N/A'}</h3>
+            <h3>SubTotal: {subTotal !== null ? subTotal : 'N/A'}</h3>
+        <h3>Corner Charge: </h3>
+        <h3>Facing Charge: </h3>
+        <h3>Filling Charge: </h3>
+        <h3>Remoteness Charge</h3>
+        <h3>Project management charge</h3>
+        <h3>Project adjustment charge</h3>
+        <h3>Floor level charges</h3>
+        <h3>Unit adjustment charges</h3>
+        <h3>Grand total</h3>
+
+        </CardContent>
+    </Card>
+
+
+
+        </TabsContent>
+        <TabsContent value="bungalow">
+         
+        </TabsContent>
+      </Tabs>
+
+    </div>
+  );
+};
+
+export default ApartmentConfig;
