@@ -382,56 +382,18 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
 
   return (
     <div className="container mx-auto p-4 sm:p-8 md:p-12 lg:p-16 flex flex-wrap justify-around gap-8">
-        <Card className="w-[1000px] flex-shrink-0">
-          <CardHeader>
-            <CardTitle>Apartment</CardTitle>
-            <CardDescription>
-              Add details here to get a quotation
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
-          
-
             {/* <div className="flex flex-wrap space-y-1"> */}
-
               {/* Select branch section */}
+              
               <div className="w-full md:w-[48%] lg:w-[30%]">
               <Card>
-                <CardHeader>
-                  <CardTitle>Select Branch</CardTitle>
-                </CardHeader>
-                <CardContent>
-                <form>
+  <CardHeader>
+    <CardTitle>Select Branch</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <form>
       <div className="grid w-full items-center gap-4">
-      <div className="flex flex-col space-y-1.5">
-  <Label htmlFor="remoteness-factor">Remoteness Factor</Label>
-  <Input
-  id="remoteness-factor"
-  placeholder="Enter Remoteness Factor"
-  value={remotenessFactor !== null ? remotenessFactor.toString() : ''}
-  onChange={(e) => setRemotenessFactor(parseFloat(e.target.value) || 0)}
-/>
-          <Label htmlFor="base-builtup-rate">Base Builtup rate (raw)</Label>
-          <Input
-            id="base-builtup-rate"
-            placeholder="Enter Base built-up rate(raw)"
-            value={baseBuiltupRate}
-            onChange={(e) => setBaseBuiltupRate(e.target.value)}
-          />
-          <Label htmlFor="builtup-rate-with-floor">Built-up rate with addition of floor</Label>
-          <Input
-            id="builtup-rate-with-floor"
-            placeholder="Base Built-up rate (raw) with addition of floor"
-            value={builtupRateWithFloor}
-            onChange={(e) => setBuiltupRateWithFloor(e.target.value)}
-          />
-        </div>
-      </div>
-    </form>
-                </CardContent>
-              </Card>
-
-              <div className="space-y-1">
+      <div className="space-y-1">
               <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline">Apartment Type</Button>
@@ -476,21 +438,49 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
           </DropdownMenuCheckboxItem>
         </DropdownMenuContent>
       </DropdownMenu>
+              </div>
 
-              </div>
-              </div>
-            </CardContent>
-          
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="remoteness-factor">Remoteness Factor</Label>
+          <Input
+            id="remoteness-factor"
+            placeholder="Enter Remoteness Factor"
+            value={remotenessFactor !== null ? remotenessFactor.toString() : ''}
+            onChange={(e) => setRemotenessFactor(parseFloat(e.target.value) || 0)}
+          />
+
+          <Label htmlFor="base-builtup-rate">Base Builtup rate (raw)</Label>
+          <Input
+            id="base-builtup-rate"
+            placeholder="Enter Base built-up rate(raw)"
+            value={baseBuiltupRate}
+            onChange={(e) => setBaseBuiltupRate(e.target.value)}
+          />
+
+          <Label htmlFor="builtup-rate-with-floor">Built-up rate with addition of floor</Label>
+          <Input
+            id="builtup-rate-with-floor"
+            placeholder="Base Built-up rate (raw) with addition of floor"
+            value={builtupRateWithFloor}
+            onChange={(e) => setBuiltupRateWithFloor(e.target.value)}
+          />
+        </div>
+      </div>
+    </form>
+  </CardContent>
+</Card>
+</div>
+
               {/* model section */}
-              <Card className="w-[350px] flex-shrink-0">
-                <CardHeader>
-                  <CardTitle>Select Model</CardTitle>
-                </CardHeader>
-                <CardContent>
-                <form>
+<Card className="w-full md:w-[48%] lg:w-[30%]">
+  <CardHeader>
+    <CardTitle>Select Model</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <form>
       <div className="grid w-full items-center gap-4">
         <div className="flex flex-col space-y-1.5">
-          <Label htmlFor="unit-covered">Flat Covered</Label>
+          <Label htmlFor="flat-covered">Flat Covered</Label>
           <Input
             id="flat-covered"
             placeholder="One unit covered built up area (excluding parking)"
@@ -499,7 +489,7 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
           />
         </div>
         <div className="flex flex-col space-y-1.5">
-          <Label htmlFor="plate-covered">Floor Plate covered</Label>
+          <Label htmlFor="floor-plate-covered">Floor Plate covered</Label>
           <Input
             id="floor-plate-covered"
             placeholder="Floor plate covered built up area (excluding parking)"
@@ -517,7 +507,7 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
           />
         </div>
         <div className="flex flex-col space-y-1.5">
-          <Label htmlFor="floors">Number of Floors</Label>
+          <Label htmlFor="number-of-floors">Number of Floors</Label>
           <Input
             id="number-of-floors"
             placeholder="No. of Floors"
@@ -527,10 +517,9 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
         </div>
       </div>
     </form>
-      </CardContent>
-    </Card>
-
-              {/* unit section */}
+  </CardContent>
+</Card>
+            {/* unit section */}
               <div className="w-full md:w-[48%] lg:w-[30%]">
               <Card>
                 <CardHeader>
@@ -624,144 +613,145 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
     </Card>
     </div>
 
-              {/* project section */}
-              <Card className="w-[500px]">
-                <CardHeader>
-                  <CardTitle>Project Details</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form>
-                    <div className="grid w-full items-center gap-4">
-                    <div className="flex flex-col space-y-1.5">
-  <Label htmlFor="land-rate">Land rate</Label>
-  <Input
-    id="land-rate"
-    placeholder="Land rate at the time of purchase"
-    value={landRate}
-    onChange={(e) => setLandRate(e.target.value)}
-  />
+{/* project section */}
+<div className="w-full md:w-[48%] lg:w-[30%]">
+<Card className="w-[500px]">
+  <CardHeader>
+    <CardTitle>Project Details</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <form>
+      <div className="grid w-full items-center gap-4">
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="land-rate">Land rate</Label>
+          <Input
+            id="land-rate"
+            placeholder="Land rate at the time of purchase"
+            value={landRate}
+            onChange={(e) => setLandRate(e.target.value)}
+          />
+        </div>
+
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="current-land-rate">Current Land Rate</Label>
+          <Input
+            id="current-land-rate"
+            placeholder="Current land rate as per market value(Adding value)"
+            value={currentLandRate}
+            onChange={(e) => setCurrentLandRate(e.target.value)}
+          />
+        </div>
+
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="land-value">Land value sell factor</Label>
+          <Input
+            id="land-value"
+            placeholder="Enter land value sell factor"
+            value={landValueSellFactor}
+            onChange={(e) => setLandValueSellFactor(e.target.value)}
+          />
+        </div>
+
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="development-charge">Development Charge</Label>
+          <Input
+            id="development-charge"
+            placeholder="Enter development charge"
+            value={developmentCharge}
+            onChange={(e) => setDevelopmentCharge(e.target.value)}
+          />
+        </div>
+
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="legal-charge">Legal Charge</Label>
+          <Input
+            id="legal-charge"
+            placeholder="Enter legal charge"
+            value={legalCharge}
+            onChange={(e) => setLegalCharge(e.target.value)}
+          />
+        </div>
+
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="adjustment-factor">Adjustment-Factor</Label>
+          <Input
+            id="adjustment-factor"
+            placeholder="Enter adjustment factor"
+            value={adjustmentFactor}
+            onChange={(e) => setAdjustmentFactor(e.target.value)}
+          />
+        </div>
+
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="filling-depth">Filling Depth</Label>
+          <Input
+            id="filling-depth"
+            placeholder="Filling depth as per required in Feet unit"
+            value={fillingDepth}
+            onChange={(e) => setFillingDepth(parseFloat(e.target.value) || 0)}
+          />
+        </div>
+
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="total-area">Total land Area</Label>
+          <Input
+            id="total-area"
+            placeholder="Enter total land area"
+            value={totalArea}
+            onChange={(e) => setTotalArea(e.target.value)}
+          />
+        </div>
+
+        <div className="flex flex-col space-y-1.5">
+          <Label htmlFor="project-management">Project Management %</Label>
+          <Input
+            id="project-management"
+            placeholder="project management charges such as advertisements etc. in %"
+            value={projectManagement}
+            onChange={(e) => setProjectManagement(e.target.value)}
+          />
+        </div>
+      </div>
+    </form>
+  </CardContent>
+</Card>
 </div>
 
-<div className="flex flex-col space-y-1.5">
-  <Label htmlFor="current-land-rate">Current Land Rate</Label>
-  <Input
-    id="current-land-rate"
-    placeholder="Current land rate as per market value(Adding value)"
-    value={currentLandRate}
-    onChange={(e) => setCurrentLandRate(e.target.value)}
-  />
-</div>
-<div className="flex flex-col space-y-1.5">
-  <Label htmlFor="land-value">Land value sell factor</Label>
-  <Input
-    id="land-value"
-    placeholder="Enter land value sell factor"
-    value={landValueSellFactor}
-    onChange={(e) => setLandValueSellFactor(e.target.value)}
-  />
-</div>
+<Button onClick={handleGetQuotation} className="w-full">Get Quotation</Button>
 
-<div className="flex flex-col space-y-1.5">
-  <Label htmlFor="development-charge">Development Charge</Label>
-  <Input
-    id="development-charge"
-    placeholder="Enter development charge"
-    value={developmentCharge}
-    onChange={(e) => setDevelopmentCharge(e.target.value)}
-  />
-</div>
-
-<div className="flex flex-col space-y-1.5">
-  <Label htmlFor="legal-charge">Legal Charge</Label>
-  <Input
-    id="legal-charge"
-    placeholder="Enter legal charge"
-    value={legalCharge}
-    onChange={(e) => setLegalCharge(e.target.value)}
-  />
-</div>
-
-<div className="flex flex-col space-y-1.5">
-  <Label htmlFor="adjustment-factor">Adjustment-Factor</Label>
-  <Input
-    id="adjustment-factor"
-    placeholder="Enter adjustment factor"
-    value={adjustmentFactor}
-    onChange={(e) => setAdjustmentFactor(e.target.value)}
-  />
-</div>
-
-<div className="flex flex-col space-y-1.5">
-<Label htmlFor="filling-depth">Filling Depth</Label>
-<Input
-  id="filling-depth"
-  placeholder="Filling depth as per required in Feet unit"
-  value={fillingDepth}
-  onChange={(e) => setFillingDepth(parseFloat(e.target.value) || 0)}
-/>
-</div>
-
-<div className="flex flex-col space-y-1.5">
-  <Label htmlFor="total-area">Total land Area</Label>
-  <Input
-    id="total-area"
-    placeholder="Enter total land area"
-    value={totalArea}
-    onChange={(e) => setTotalArea(e.target.value)}
-  />
-</div>
-
-            <div className="flex flex-col space-y-1.5">
-  <Label htmlFor="project-management">Project Management %</Label>
-  <Input
-    id="project-management"
-    placeholder="project management charges such as advertisements etc. in %"
-    value={projectManagement}
-    onChange={(e) => setProjectManagement(e.target.value)}
-  />
-</div>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
-
-          </Card>
-          <CardFooter>
-  <Button onClick={handleGetQuotation}>Get Quotation</Button>
-</CardFooter>
-
-
-
-          <Card>
+          <Card className='W-full'>
       <CardHeader>
               <CardTitle>Total Value</CardTitle>
             </CardHeader>
-            <CardContent>
-            <h3>Company Total: INR {companyTotal.toFixed(2)}</h3>
-            {landShare !== null && <h3 className="mt-4">Land share per unit: {landShare}</h3>}
-    {facingFactor !== null && <h3 className="mt-4">Facing Factor: {facingFactor * 100}%</h3>}
+            <CardContent className='p-4'>
+            <h3 className='mt-4 text-lg font-semibold'>Company Total: INR {companyTotal.toFixed(2)}</h3>
+            {landShare !== null && <h3 className="mt-4 text-lg font-semibold">Land share per unit: {landShare}</h3>}
+    {facingFactor !== null && <h3 className="mt-4 text-lg font-semibold">Facing Factor: {facingFactor * 100}%</h3>}
 
     {selectedCornerPlot !== undefined && (
-      <h3 className="mt-4">Corner Plot Factor: {selectedCornerPlot === "yes" ? 1 : 0}</h3>
+      <h3 className="mt-4 text-lg font-semibold">Corner Plot Factor: {selectedCornerPlot === "yes" ? 1 : 0}</h3>
     )}
 
-    <h3 className="mt-4">Floor Level Factor: {floorLevelHeightFactor}%</h3>
+    <h3 className="mt-4 text-lg font-semibold">Floor Level Factor: {floorLevelHeightFactor}%</h3>
 
-    <h3 className="mt-4">Net selling land rate: {netSellingLandRate !== null ? netSellingLandRate : 'N/A'}</h3>
-    {landPrice !== null && <h3 className="mt-4">Land Price: {landPrice}</h3>}
+    <h3 className="mt-4 text-lg font-semibold">Net selling land rate: {netSellingLandRate !== null ? netSellingLandRate : 'N/A'}</h3>
+<h3 className="mt-4 text-lg font-semibold">Land Price: {landPrice}</h3>
 
-    {buildingPrice !== null && <h3 className="mt-4">Building Price: {buildingPrice}</h3>}
+{buildingPrice !== null && <h3 className="mt-4 text-lg font-semibold">Building Price: {buildingPrice}</h3>}
 
-    {subtotal !== null && <h3 className="mt-4">Subtotal: {subtotal}</h3>}
-    {cornerCharge !== null && <h3 className="mt-4">Corner Charge: {cornerCharge}</h3>}
-    <h3 className="mt-4">Facing Charge: {facingFactor !== null && subtotal !== null ? subtotal * facingFactor : 'N/A'}</h3>
-    {fillingCharge !== null && <h3 className="mt-4">Filling Charge: {fillingCharge}</h3>}
-    {remotenessCharge !== null && <h3 className="mt-4">Remoteness Charge: {remotenessCharge}</h3>}
-    {projectManagementCharge !== null && <h3 className="mt-4">Project Adjustment Charge: {projectManagementCharge}</h3>}
-    {floorLevelCharges !== null && <h3 className="mt-4">Floor Level Charges: {floorLevelCharges}</h3>}
-    {unitAdjustmentCharges !== null && <h3 className="mt-4">Unit Adjustment Charges: {unitAdjustmentCharges}</h3>}
-    {grandTotal !== null && <h3 className="mt-6 text-2xl font-bold">Grand Total: {grandTotal}</h3>}
+{subtotal !== null && <h3 className="mt-4 text-lg font-semibold">Subtotal: {subtotal}</h3>}
+{cornerCharge !== null && <h3 className="mt-4 text-lg font-semibold">Corner Charge: {cornerCharge}</h3>}
 
+<h3 className="mt-4 text-lg font-semibold">Facing Charge: {facingFactor !== null && subtotal !== null ? subtotal * facingFactor : 'N/A'}</h3>
+
+{fillingCharge !== null && <h3 className="mt-4 text-lg font-semibold">Filling Charge: {fillingCharge}</h3>}
+{remotenessCharge !== null && <h3 className="mt-4 text-lg font-semibold">Remoteness Charge: {remotenessCharge}</h3>}
+{projectManagementCharge !== null && <h3 className="mt-4 text-lg font-semibold">Project Adjustment Charge: {projectManagementCharge}</h3>}
+
+{floorLevelCharges !== null && <h3 className="mt-4 text-lg font-semibold">Floor Level Charges: {floorLevelCharges}</h3>}
+{unitAdjustmentCharges !== null && <h3 className="mt-4 text-lg font-semibold">Unit Adjustment Charges: {unitAdjustmentCharges}</h3>}
+
+{grandTotal !== null && <h3 className="mt-6 text-2xl font-bold text-blue-950">Grand Total: {grandTotal}</h3>}
 
         </CardContent>
     </Card>
