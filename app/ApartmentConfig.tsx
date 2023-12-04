@@ -9,6 +9,7 @@ import 'tailwindcss/tailwind.css';
 import { DropdownMenu,DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuSeparator, DropdownMenuTrigger,   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem, } from "@/components/ui/dropdown-menu";
+import { Divide } from 'lucide-react';
 type Checked = boolean;
 const ApartmentConfig: React.FC = () => {
     const [showStatusBar, setShowStatusBar] = useState<Checked>(true);
@@ -169,6 +170,7 @@ const [selectedFacing, setSelectedFacing] = useState<string | undefined>(undefin
       west: 0.04,   // 4%
       north: 0.03,  // 3%
       south: 0.02,  // 2%
+      none : 0,     // 0%
     };
   
     setFacingFactor(facingPercentageMap[facing] || 0);
@@ -364,10 +366,11 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
 }
 
   return (
-    <div className="container mx-auto p-4 sm:p-8 md:p-12 lg:p-16">
-
+    // <div className="container mx-auto p-4 sm:p-8 md:p-12 lg:p-16 ">
+    <div>
+<div className='grid sm:grid-cols-1  md:grid-cols-2   lg:grid-cols-2 gap-8 m-4'>
       {/* Select branch section */}
-        <form className="grid w-full items-center gap-4">
+        <form className="grid items-center gap-4 p-4 rounded-md">
             <div className="space-y-1">
               <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -447,7 +450,7 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
 
 
       {/* Model section */}
-        <form className="grid w-full items-center gap-4">
+        <form className="grid items-center gap-4">
           <div className="flex flex-col space-y-1.5">
   <Label htmlFor="flat-covered">Flat Covered</Label>
   <Input
@@ -490,7 +493,7 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
 </div>
     </form>
       {/* Unit section */}
-        <form className="grid w-full items-center gap-4">
+        <form className="grid items-center gap-4">
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="adjustment-factor">Adjustment Factor</Label>
@@ -554,6 +557,7 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
             <DropdownMenuRadioItem value="west">West</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="north">North</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="south">South</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="none">No-Facing</DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -576,7 +580,7 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
         </form>
 
       {/* Project section */}
-        <form className="grid w-full items-center gap-4">
+        <form className="grid items-center gap-4">
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
           <Label htmlFor="land-rate">Land rate</Label>
@@ -678,15 +682,15 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
         </div>
       </div>
     </form>
-
+</div>
 
 <Button onClick={handleGetQuotation} className="w-full bg-blue-500 text-white p-2 rounded-md">
         Get Quotation
       </Button>
-
-      <h2 className="text-lg font-bold">Total Value</h2>
-
 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
+  
+
+<h2 className="text-lg font-bold">Total Value</h2>
   {/* Display details for each unit */}
   <div className="mt-4 text-lg font-semibold">
     Company Total: INR {companyTotal.toFixed(2)}
