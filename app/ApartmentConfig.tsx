@@ -507,7 +507,6 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
     onChange={(e) => handleFillingChargeChange(e.target.value)}
   />
 </div>
-            <div className="flex flex-col space-y-1.5">
             <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline">Floor Level</Button>
@@ -529,9 +528,7 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>
-            </div>
-            </div>
-            <div className="flex flex-col space-y-1.5">
+        </div>
 
 <DropdownMenu>
   <DropdownMenuTrigger asChild>
@@ -544,7 +541,7 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
     </DropdownMenuRadioGroup>
   </DropdownMenuContent>
 </DropdownMenu>
-<div className="flex flex-col space-y-1.5">
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline">Facing</Button>
@@ -561,7 +558,7 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-    </div>
+
     <div className="flex flex-col space-y-1.5">
   <Label htmlFor="additionalBuiltUpAreaValue">Additional Built-up Area</Label>
   <Input
@@ -576,7 +573,7 @@ setGrandTotal(isNaN(grandTotalValue) ? null : grandTotalValue);
               <Label htmlFor="additional-land-area">Additional Land Area</Label>
               <Input id="name" type='number' placeholder="Additional Land Area" />
             </div>
-          </div>
+          
         </form>
 
       {/* Project section */}
